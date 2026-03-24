@@ -19,4 +19,18 @@ class BrainLexerTest extends AnyFunSuite {
     val expectedNames = List("read", "l_bracket", "next", "inc", "print", "prev", "dec", "r_bracket")
     assert(result.map(_.name) == expectedNames)
   }
+
+  test("tokenize should throw on unmatched bracket") {
+    val exception = intercept[IllegalStateException] {
+      BrainLexer.tokenize("[+<.]]--")
+    }
+    assert(exception.getMessage == "Unmatched bracket at line 1, position 7")
+  }
+
+  test("tokenize should throw on unclosed bracket") {
+    val exception = intercept[IllegalStateException] {
+      BrainLexer.tokenize(".[+")
+    }
+    assert(exception.getMessage == "Unclosed bracket at line 1, position 4")
+  }
 }
