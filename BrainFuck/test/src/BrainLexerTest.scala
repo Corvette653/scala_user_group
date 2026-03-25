@@ -26,4 +26,17 @@ class BrainLexerTest extends AnyFunSuite {
     }
     assert(exception.getMessage == "Unmatched bracket at line 1, position 7")
   }
+
+  test("tokenize should parse Brainfuck> code correctly") {
+    val (_, result) = BrainLexer.tokenize("customFunc(+>+) customFunc!")
+    val expectedNames = List("func_name", "l_paren", "inc", "next", "inc", "r_paren", "func_name", "invocation")
+    assert(result.map(_.name) == expectedNames)
+  }
+
+  test("tokenize should throw on invalid brackets sequence") {
+    val exception = intercept[IllegalStateException] {
+      BrainLexer.tokenize("(.[+)>]")
+    }
+    assert(exception.getMessage == "Unmatched bracket at line 1, position 6")
+  }
 }
