@@ -25,6 +25,7 @@ val BrainLexer = lexer[BrainLexerCtx]:
   case "\\]" => 
     ctx.brackets -= 1
     if ctx.brackets < 0 then
+      System.err.println(s"${filePath}:${ctx.line}:${ctx.position}: error: Mismatched ']' brackets")
       throw IllegalStateException(s"Unmatched bracket at line ${ctx.line}, position ${ctx.position}")
     Token["r_bracket"]
   case "\n" => Token.Ignored
