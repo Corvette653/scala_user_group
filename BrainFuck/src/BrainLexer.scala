@@ -1,8 +1,16 @@
 package BrainFuck
 
 import alpaca.*
+import alpaca.internal.lexer.LineTracking
+import alpaca.internal.lexer.PositionTracking
 
-case class BrainLexerCtx(var brackets: Int = 0) extends LexerCtx
+case class BrainLexerCtx(
+    var brackets: Int = 0,
+    var line: Int = 1,
+    var position: Int = 1
+) extends LexerCtx
+    with LineTracking
+    with PositionTracking
 
 val BrainLexer = lexer[BrainLexerCtx]:
   case ">" => Token["next"]
@@ -17,7 +25,7 @@ val BrainLexer = lexer[BrainLexerCtx]:
   case "\\]" => 
     ctx.brackets -= 1
     if ctx.brackets < 0 then
-      throw IllegalStateException(s"Unmatched bracket at line ???, position ???")
+      throw IllegalStateException(s"Unmatched bracket at line ${ctx.line}, position ${ctx.position}")
     Token["r_bracket"]
   case "\n" => Token.Ignored
   case "." => Token.Ignored
