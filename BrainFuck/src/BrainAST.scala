@@ -5,6 +5,8 @@ class Memory(val underlying: Array[Int] = new Array(256), var pointer: Int = 0)
 enum BrainAST:
   case Root(instructions: List[BrainAST])
   case Loop(instructions: List[BrainAST])
+  case FuncDef(name: String, instructions: List[BrainAST])
+  case FuncCall(name: String)
   case Next, Prev, Inc, Dec, Print, Read
 
   def eval(mem: Memory = Memory()): Unit = this match
