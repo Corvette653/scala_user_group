@@ -15,5 +15,5 @@ object BracketsValidation:
     case (_, "]", ctx) =>
       ctx.openBrackets -= 1
       if ctx.openBrackets < 0 then
-        throw IllegalStateException(s"Unmatched ']' bracket at line ${ctx.line}, position ${ctx.position}")
+        error(ctx.line, ctx.position, "Unmatched ']' bracket")
     case _ => ()
