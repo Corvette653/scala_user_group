@@ -1,10 +1,12 @@
 package BrainFuck
 
-class Memory(val underlying: Array[Int] = new Array(256), var pointer: Int = 0)
+class Memory(val underlying: Array[Int] = new Array(256), var pointer: Int = 0, var functions: Map[String, List[BrainAST]] = Map.empty)
 
 enum BrainAST:
   case Root(instructions: List[BrainAST])
   case Loop(instructions: List[BrainAST])
+  case FuncDef(name: String, instructions: List[BrainAST])
+  case FuncCall(name: String)
   case Next, Prev, Inc, Dec, Print, Read
 
   def eval(mem: Memory = Memory()): Unit = this match
@@ -15,6 +17,8 @@ enum BrainAST:
     case BrainAST.Print => print(mem.underlying(mem.pointer).toChar)
     case BrainAST.Read => mem.underlying(mem.pointer) = scala.io.StdIn.readInt()
     case BrainAST.Root(instructions) => instructions.foreach(_.eval(mem))
+    case BrainAST.FuncDef(name, instructions) => mem.functions += (name -> instructions)
+    case BrainAST.FuncCall(name) => mem.functions(name).foreach(_.eval(mem))
     case BrainAST.Loop(instructions) =>
       while mem.underlying(mem.pointer) != 0 do
         instructions.foreach(_.eval(mem))
