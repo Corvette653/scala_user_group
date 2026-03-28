@@ -3,7 +3,9 @@ package BrainFuck
 import alpaca.*
 import BrainAST.*
 
-object BrainParser extends Parser:
+case class BrainParserCtx(var functions: Set[String] = Set.empty[String]) extends ParserCtx
+
+object BrainParser extends Parser[BrainParserCtx]:
   val root: Rule[BrainAST] = rule:
     case (instruction.List(instructions)) => Root(instructions)
 
@@ -11,10 +13,17 @@ object BrainParser extends Parser:
     case (BrainLexer.l_bracket(_), instruction.List(instructions), BrainLexer.r_bracket(_)) => Loop(instructions)
 
   val funcDef: Rule[BrainAST] = rule:
-    case (BrainLexer.func_name(funcName), BrainLexer.l_paren(_), instruction.List(instructions), BrainLexer.r_paren(_)) => FuncDef(funcName.value, instructions)
+    case (BrainLexer.func_name(funcName), BrainLexer.l_paren(_), instruction.List(instructions), BrainLexer.r_paren(_)) => 
+      if ctx.functions.contains(funcName.value) then 
+        error(funcName.line, funcName.position, s"Function ${funcName.value} already defined")
+      ctx.functions += funcName.value
+      FuncDef(funcName.value, instructions)
 
   val funcCall: Rule[BrainAST] = rule:
-    case (BrainLexer.func_name(funcName), BrainLexer.invocation(_)) => FuncCall(funcName.value)
+    case (BrainLexer.func_name(funcName), BrainLexer.invocation(_)) => 
+      if !ctx.functions.contains(funcName.value) then 
+        error(funcName.line, funcName.position, s"Function ${funcName.value} not defined")
+      FuncCall(funcName.value)
 
   val instruction: Rule[BrainAST] = rule(
     { case BrainLexer.next(_) => Next },
