@@ -11,3 +11,5 @@ val BrainLexer = lexer:
   case "," => Token["read"]
   case "\\[" => Token["l_bracket"]
   case "\\]" => Token["r_bracket"]
+  case "\n" => Token.Ignored
+  case "." => Token.Ignored
