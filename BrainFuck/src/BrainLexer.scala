@@ -9,6 +9,7 @@ case class BrainLexerCtx(
     var line: Int = 1,
     var position: Int = 1
 ) extends LexerCtx
+    with BracketsValidation
     with LineTracking
     with PositionTracking
 
@@ -19,13 +20,7 @@ val BrainLexer = lexer[BrainLexerCtx]:
   case "-" => Token["dec"]
   case "\\." => Token["print"]
   case "," => Token["read"]
-  case "\\[" =>
-    ctx.openBrackets += 1
-    Token["l_bracket"]
-  case "\\]" =>
-    ctx.openBrackets -= 1
-    if ctx.openBrackets < 0 then
-      throw IllegalStateException(s"Unmatched closing bracket at line ${ctx.line}, position ${ctx.position}")
-    Token["r_bracket"]
+  case "\\[" => Token["l_bracket"]
+  case "\\]" => Token["r_bracket"]
   case "\n" => Token.Ignored
   case "." => Token.Ignored
