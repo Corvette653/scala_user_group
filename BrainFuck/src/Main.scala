@@ -10,7 +10,7 @@ import alpaca.*
   val fileReader = LazyReader.from(Path.of(path))
   val (final_ctx, tokens) = BrainLexer.tokenize(fileReader)
 
-  if final_ctx.openBrackets != 0 then
+  if !final_ctx.openBrackets.isEmpty then
     error(final_ctx.line, final_ctx.position, "Unclosed bracket")
 
   val (_, ast) = BrainParser.parse(tokens)

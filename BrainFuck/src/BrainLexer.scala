@@ -3,9 +3,10 @@ package BrainFuck
 import alpaca.*
 import alpaca.internal.lexer.LineTracking
 import alpaca.internal.lexer.PositionTracking
+import scala.collection.mutable.Stack
 
 case class BrainLexerCtx(
-    var openBrackets: Int = 0,
+    var openBrackets: Stack[Char] = Stack(),
     var line: Int = 1,
     var position: Int = 1
 ) extends LexerCtx
